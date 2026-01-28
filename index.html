@@ -6,128 +6,153 @@
     <title>Ultrawide Flip Clock</title>
     <style>
         :root {
-            /* Softened background - deep charcoal instead of pure black */
-            --bg-color: #121212; 
+            --bg-color: #121212;
             --card-bg: #1c1c1c;
             --text-color: #f5f5f5;
-            --line-color: rgba(0, 0, 0, 0.7);
             --border-color: #2d2d2d;
-            --shadow-color: rgba(0, 0, 0, 0.4);
+            --speed: 0.6s;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            overflow: hidden;
-            cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            overflow: hidden; cursor: pointer;
         }
 
-        .clock-container {
+        .clock {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4vh; /* Larger gap since colon is gone */
-            width: 100%;
+            gap: 5vh;
+            perspective: 1000px;
         }
 
-        .flip-card {
+        /* Flip Card Structure */
+        .flip-unit {
             position: relative;
+            width: 45vh; /* Taller, narrower aspect ratio */
+            height: 70vh;
             background-color: var(--card-bg);
-            color: var(--text-color);
-            /* Increased size for 1440p */
-            font-size: 65vh; 
-            font-weight: 800;
-            padding: 0 5vh;
-            /* Increased border radius */
-            border-radius: 5vh; 
+            border-radius: 6vh;
             border: 2px solid var(--border-color);
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 30px 60px var(--shadow-color);
-            transition: transform 0.2s ease;
+            font-size: 60vh;
+            font-weight: 800;
+            line-height: 70vh;
+            text-align: center;
+            color: var(--text-color);
         }
 
-        /* The 3D Fold Shadow (Top half) */
-        .flip-card::before {
-            content: '';
+        /* Common styles for half-cards */
+        .top, .bottom, .leaf-top, .leaf-bottom {
             position: absolute;
+            left: 0; width: 100%; height: 50%;
+            overflow: hidden;
+            background-color: var(--card-bg);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .top, .leaf-top {
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 50%;
-            /* Subtle depth gradient */
-            background: linear-gradient(to bottom, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.2) 100%);
-            border-radius: 4.8vh 4.8vh 0 0;
-            pointer-events: none;
+            border-radius: 6vh 6vh 0 0;
+            line-height: 70vh; /* Keeps text centered despite being half-height */
+            background: linear-gradient(to bottom, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.1) 100%), var(--card-bg);
+        }
+
+        .bottom, .leaf-bottom {
+            bottom: 0;
+            border-radius: 0 0 6vh 6vh;
+            line-height: 0; /* Aligns the bottom half of the text */
+            background: var(--card-bg);
         }
 
         /* The horizontal split line */
-        .flip-card::after {
+        .flip-unit::after {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 6px; /* Slightly thicker line for the bigger cards */
-            background-color: var(--line-color);
-            z-index: 2;
+            top: 50%; left: 0; width: 100%; height: 4px;
+            background: rgba(0,0,0,0.6);
+            z-index: 10;
             transform: translateY(-50%);
         }
 
-        /* Hide cursor when idle */
+        /* Animation */
+        .leaf {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 50%;
+            z-index: 5;
+            transition: transform var(--speed) ease-in;
+            transform-origin: bottom;
+        }
+
+        .flipping .leaf {
+            transform: rotateX(-180deg);
+        }
+
         .idle { cursor: none; }
     </style>
 </head>
 <body>
 
-    <div class="clock-container">
-        <div class="flip-card" id="hours">00</div>
-        <div class="flip-card" id="minutes">00</div>
+    <div class="clock">
+        <div class="flip-unit" id="hours-unit">
+            <div class="top">00</div>
+            <div class="leaf"><div class="leaf-top">00</div><div class="leaf-bottom">00</div></div>
+            <div class="bottom">00</div>
+        </div>
+        <div class="flip-unit" id="minutes-unit">
+            <div class="top">00</div>
+            <div class="leaf"><div class="leaf-top">00</div><div class="leaf-bottom">00</div></div>
+            <div class="bottom">00</div>
+        </div>
     </div>
 
     <script>
-        const hoursEl = document.getElementById('hours');
-        const minutesEl = document.getElementById('minutes');
+        function updateUnit(id, newValue) {
+            const unit = document.getElementById(id);
+            const top = unit.querySelector('.top');
+            const bottom = unit.querySelector('.bottom');
+            const leafTop = unit.querySelector('.leaf-top');
+            const leafBottom = unit.querySelector('.leaf-bottom');
+
+            if (top.textContent === newValue) return;
+
+            // Prepare animation
+            unit.classList.remove('flipping');
+            leafTop.textContent = top.textContent; // Start from old value
+            leafBottom.textContent = newValue;     // End at new value
+            top.textContent = newValue;
+
+            // Trigger reflow
+            void unit.offsetWidth;
+
+            unit.classList.add('flipping');
+
+            setTimeout(() => {
+                bottom.textContent = newValue;
+                unit.classList.remove('flipping');
+            }, 600);
+        }
 
         function updateClock() {
             const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            
-            if (hoursEl.textContent !== h) hoursEl.textContent = h;
-            if (minutesEl.textContent !== m) minutesEl.textContent = m;
+            updateUnit('hours-unit', String(now.getHours()).padStart(2, '0'));
+            updateUnit('minutes-unit', String(now.getMinutes()).padStart(2, '0'));
         }
 
-        // Click anywhere to toggle Fullscreen
+        // Fullscreen
         document.body.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.error(`Fullscreen failed: ${err.message}`);
-                });
-            } else {
-                document.exitFullscreen();
-            }
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
         });
 
-        // Hide mouse cursor after 2.5s of no movement
-        let idleTimer;
-        const hideMouse = () => {
+        // Hide mouse
+        let timer;
+        document.addEventListener('mousemove', () => {
             document.body.classList.remove('idle');
-            clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => {
-                document.body.classList.add('idle');
-            }, 2500);
-        };
-
-        document.addEventListener('mousemove', hideMouse);
+            clearTimeout(timer);
+            timer = setTimeout(() => document.body.classList.add('idle'), 2000);
+        });
 
         setInterval(updateClock, 1000);
         updateClock();
