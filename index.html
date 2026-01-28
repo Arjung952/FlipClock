@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultrawide Flip Clock</title>
+    <title>Minimal Ultrawide Flip Clock</title>
     <style>
         :root {
             --bg-color: #0d0d0d; 
@@ -20,8 +20,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Using a condensed font ensures wide numbers like '0' and '8' fit */
-            font-family: 'Arial Narrow', sans-serif-condensed, Impact, -apple-system, BlinkMacSystemFont, sans-serif;
+            /* Condensed font stack to maintain fit at larger scales */
+            font-family: 'Arial Narrow', sans-serif-condensed, Impact, -apple-system, sans-serif;
             overflow: hidden;
             cursor: pointer;
         }
@@ -30,7 +30,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4vh; 
+            gap: 5vh; 
             width: 100%;
         }
 
@@ -38,25 +38,26 @@
             position: relative;
             background-color: var(--card-bg);
             color: var(--text-color);
-            /* Sizing adjusted to ensure numbers never overflow */
-            font-size: 45vh; 
+            /* Font size increased for maximum screen coverage */
+            font-size: 58vh; 
             font-weight: 800;
-            width: 48vh; 
-            height: 70vh; 
-            border-radius: 4vh;
+            /* Box dimensions increased for ultrawide snugness */
+            width: 58vh; 
+            height: 82vh; 
+            border-radius: 5vh;
             border: none; 
             
             display: flex;
             justify-content: center;
             align-items: center;
             line-height: 1;
-            /* Optical centering adjustment */
-            padding-bottom: 2vh; 
+            /* Precise optical centering */
+            padding-bottom: 3vh; 
             box-sizing: border-box;
             overflow: hidden;
         }
 
-        /* 3D Fold Shadow (Top half) */
+        /* 3D Depth Shadow (Top half) */
         .flip-card::before {
             content: '';
             position: absolute;
@@ -64,20 +65,21 @@
             left: 0;
             width: 100%;
             height: 50%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.15) 100%);
-            border-radius: 4vh 4vh 0 0;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.18) 100%);
+            border-radius: 5vh 5vh 0 0;
             pointer-events: none;
             z-index: 1;
         }
 
-        /* The horizontal split line - matches background exactly */
+        /* Refined Thinner Midline - blends with background */
         .flip-card::after {
             content: '';
             position: absolute;
             top: 50%;
             left: 0;
             width: 100%;
-            height: 1vh;
+            /* Thickness reduced for a cleaner split effect */
+            height: 0.5vh; 
             background-color: var(--bg-color);
             z-index: 2;
             transform: translateY(-50%);
@@ -106,6 +108,7 @@
             if (minutesEl.textContent !== m) minutesEl.textContent = m;
         }
 
+        // Fullscreen Interaction
         document.body.addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
@@ -116,6 +119,7 @@
             }
         });
 
+        // Auto-hide cursor
         let idleTimer;
         const hideMouse = () => {
             document.body.classList.remove('idle');
