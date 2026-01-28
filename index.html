@@ -6,10 +6,9 @@
     <title>Ultrawide Flip Clock</title>
     <style>
         :root {
-            --bg-color: #0d0d0d; /* Slightly off-black */
+            --bg-color: #0d0d0d; 
             --card-bg: #1a1a1a;
             --text-color: #f0f0f0;
-            --border-color: #2a2a2a;
         }
 
         body, html {
@@ -30,7 +29,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4vh; /* Slightly wider gap since colon is gone */
+            gap: 4vh; 
             width: 100%;
         }
 
@@ -38,18 +37,22 @@
             position: relative;
             background-color: var(--card-bg);
             color: var(--text-color);
-            /* Sizing optimized for height to fit 1440p */
             font-size: 55vh; 
             font-weight: 800;
-            padding: 0 4vh;
-            min-width: 45vh; /* Prevents jumping when numbers change */
+            width: 50vh; /* Fixed width for better centering */
+            height: 75vh; 
             border-radius: 4vh;
-            border: 2px solid var(--border-color);
-            line-height: 1.1;
+            border: none; 
+            
+            /* Perfect Centering Logic */
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            line-height: 1;
+            /* Optical adjustment: numbers usually need to be pushed up 
+               slightly to look perfectly centered relative to the midline */
+            padding-bottom: 2vh; 
+            box-sizing: border-box;
         }
 
         /* 3D Fold Shadow (Top half) */
@@ -61,7 +64,7 @@
             width: 100%;
             height: 50%;
             background: linear-gradient(to bottom, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.15) 100%);
-            border-radius: 3.8vh 3.8vh 0 0;
+            border-radius: 4vh 4vh 0 0;
             pointer-events: none;
             z-index: 1;
         }
@@ -73,7 +76,7 @@
             top: 50%;
             left: 0;
             width: 100%;
-            height: 0.8vh;
+            height: 1vh;
             background-color: var(--bg-color);
             z-index: 2;
             transform: translateY(-50%);
@@ -102,18 +105,16 @@
             if (minutesEl.textContent !== m) minutesEl.textContent = m;
         }
 
-        // Fullscreen Toggle
         document.body.addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Error attempting to enable full-screen mode: ${err.message}`);
+                    console.log(`Fullscreen error: ${err.message}`);
                 });
             } else {
                 document.exitFullscreen();
             }
         });
 
-        // Mouse idle hide
         let idleTimer;
         const hideMouse = () => {
             document.body.classList.remove('idle');
@@ -124,8 +125,6 @@
         };
 
         document.addEventListener('mousemove', hideMouse);
-        document.addEventListener('mousedown', hideMouse);
-
         setInterval(updateClock, 1000);
         updateClock();
     </script>
