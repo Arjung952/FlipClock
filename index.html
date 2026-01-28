@@ -15,8 +15,8 @@
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: var(--bg-color);
             display: flex; justify-content: center; align-items: center;
-            /* Using a condensed font stack to prevent horizontal overflow */
-            font-family: 'Arial Narrow', sans-serif-condensed, Impact, sans-serif;
+            /* Monospace ensures every digit has the exact same width */
+            font-family: 'Courier New', Courier, monospace;
             overflow: hidden; cursor: pointer;
         }
 
@@ -29,8 +29,8 @@
             position: relative;
             background-color: var(--card-bg);
             color: var(--text-color);
-            /* Wider cards to ensure numbers fit */
-            width: 50vh; 
+            /* Increased width to 55vh to give digits plenty of room */
+            width: 55vh; 
             height: 75vh;
             border-radius: 6vh;
             display: flex;
@@ -41,16 +41,16 @@
         }
 
         .number {
-            /* Font size reduced slightly to ensure fit within 50vh width */
-            font-size: 55vh;
+            /* Font size scaled to fit the 55vh width precisely */
+            font-size: 50vh;
             font-weight: 900;
-            /* Vertical stretch to match reference image */
-            transform: scaleY(1.35); 
+            /* Vertical stretch to match your reference photo */
+            transform: scaleY(1.4); 
             display: inline-block;
-            /* Tighter spacing to keep characters centered */
-            letter-spacing: -1vh; 
             line-height: 1;
             white-space: nowrap;
+            letter-spacing: -2vh;
+            text-align: center;
         }
 
         /* Top Half Gradient for Depth */
@@ -114,16 +114,23 @@
             setTimeout(() => card.classList.remove('pop'), 200);
         }
 
+        // Fullscreen Toggle
         document.body.addEventListener('click', () => {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-            else document.exitFullscreen();
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(e => console.error(e));
+            } else {
+                document.exitFullscreen();
+            }
         });
 
+        // Mouse Idle logic
         let idleTimer;
         document.addEventListener('mousemove', () => {
             document.body.classList.remove('idle');
             clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => document.body.classList.add('idle'), 2000);
+            idleTimer = setTimeout(() => {
+                document.body.classList.add('idle');
+            }, 2000);
         });
 
         setInterval(updateClock, 1000);
