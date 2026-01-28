@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimal Flat Clock</title>
+    <title>Minimal Ultrawide Clock</title>
     <style>
         :root {
             --bg-color: #121212; 
@@ -15,66 +15,65 @@
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: var(--bg-color);
             display: flex; justify-content: center; align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            /* Using a condensed font stack to prevent horizontal overflow */
+            font-family: 'Arial Narrow', sans-serif-condensed, Impact, sans-serif;
             overflow: hidden; cursor: pointer;
         }
 
         .clock-container {
             display: flex;
-            gap: 3vh; /* Tight gap between hours and minutes */
+            gap: 4vh;
         }
 
         .flip-card {
             position: relative;
             background-color: var(--card-bg);
             color: var(--text-color);
-            /* Adjusted for Ultrawide fit */
-            width: 44vh;
-            height: 70vh;
-            border-radius: 4vh;
-            /* Removed border outline for the "Flat" look */
+            /* Wider cards to ensure numbers fit */
+            width: 50vh; 
+            height: 75vh;
+            border-radius: 6vh;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease-out;
         }
 
         .number {
-            font-size: 60vh;
-            font-weight: 800;
+            /* Font size reduced slightly to ensure fit within 50vh width */
+            font-size: 55vh;
+            font-weight: 900;
             /* Vertical stretch to match reference image */
-            transform: scaleY(1.25); 
+            transform: scaleY(1.35); 
             display: inline-block;
-            letter-spacing: -2vh;
+            /* Tighter spacing to keep characters centered */
+            letter-spacing: -1vh; 
             line-height: 1;
+            white-space: nowrap;
         }
 
-        /* 3D Fold Shadow (Top Half) */
+        /* Top Half Gradient for Depth */
         .flip-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.18) 100%);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.2) 100%);
             z-index: 2;
             pointer-events: none;
         }
 
-        /* Seamless Midline Gap */
+        /* Seamless Midline - Blends with Background */
         .flip-card::after {
             content: '';
             position: absolute;
-            top: 50%; left: 0; width: 100%; height: 0.8vh; /* Proportionate height */
-            background-color: var(--bg-color); /* Blends into background */
+            top: 50%; left: 0; width: 100%; height: 1vh;
+            background-color: var(--bg-color);
             z-index: 3;
             transform: translateY(-50%);
         }
 
-        /* Subtle "Flip" feel animation */
-        .pop {
-            transform: scale(1.03);
-        }
-
+        .pop { transform: scale(1.02); }
         .idle { cursor: none; }
     </style>
 </head>
@@ -112,7 +111,7 @@
 
         function animate(card) {
             card.classList.add('pop');
-            setTimeout(() => card.classList.remove('pop'), 300);
+            setTimeout(() => card.classList.remove('pop'), 200);
         }
 
         document.body.addEventListener('click', () => {
@@ -124,7 +123,7 @@
         document.addEventListener('mousemove', () => {
             document.body.classList.remove('idle');
             clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => document.body.classList.add('idle'), 2500);
+            idleTimer = setTimeout(() => document.body.classList.add('idle'), 2000);
         });
 
         setInterval(updateClock, 1000);
