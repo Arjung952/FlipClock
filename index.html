@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Square Ultrawide Flip Clock</title>
+    <title>Large Square Flip Clock</title>
     <style>
         :root {
             --bg-color: #0d0d0d; 
@@ -20,7 +20,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Standard Bold font for that classic square look */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             overflow: hidden;
             cursor: pointer;
@@ -38,12 +37,12 @@
             position: relative;
             background-color: var(--card-bg);
             color: var(--text-color);
-            /* Font size balanced for square container */
-            font-size: 52vh; 
+            /* Increased font size */
+            font-size: 62vh; 
             font-weight: 800;
-            /* Making the card dimensions more square (78x80 ratio) */
-            width: 78vh; 
-            height: 80vh; 
+            /* Widened slightly to accommodate the larger font size safely */
+            width: 84vh; 
+            height: 82vh; 
             border-radius: 6vh;
             border: none; 
             
@@ -51,8 +50,8 @@
             justify-content: center;
             align-items: center;
             line-height: 1;
-            /* Centering adjustment for the numbers */
-            padding-bottom: 2vh; 
+            /* Precise vertical alignment for the enlarged font */
+            padding-bottom: 2.5vh; 
             box-sizing: border-box;
             overflow: hidden;
         }
@@ -71,14 +70,13 @@
             z-index: 1;
         }
 
-        /* Refined Ultra-Thin Midline */
+        /* Ultra-Thin Midline */
         .flip-card::after {
             content: '';
             position: absolute;
             top: 50%;
             left: 0;
             width: 100%;
-            /* Extra thin line for a sharp look */
             height: 0.4vh; 
             background-color: var(--bg-color);
             z-index: 2;
@@ -108,7 +106,6 @@
             if (minutesEl.textContent !== m) minutesEl.textContent = m;
         }
 
-        // Fullscreen Toggle
         document.body.addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
@@ -119,7 +116,6 @@
             }
         });
 
-        // Hide mouse cursor
         let idleTimer;
         const hideMouse = () => {
             document.body.classList.remove('idle');
