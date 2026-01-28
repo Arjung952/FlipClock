@@ -7,8 +7,10 @@
     <style>
         :root {
             --bg-color: #0f0f0f;
-            --text-color: #ffffff;
-            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --card-bg: #1a1a1a;
+            --text-color: #e0e0e0;
+            --line-color: rgba(0, 0, 0, 0.5);
+            --border-color: #333;
         }
 
         body, html {
@@ -20,73 +22,80 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden;
-            font-family: var(--font-main);
-            color: var(--text-color);
+            cursor: pointer;
         }
 
-        #clock {
-            font-size: 30vw; /* Responsive size based on screen width */
-            font-weight: 700;
-            letter-spacing: -0.05em;
-            cursor: pointer;
+        .clock-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
             user-select: none;
-            transition: opacity 0.3s ease;
         }
 
-        #clock:hover {
-            opacity: 0.8;
+        .flip-card {
+            position: relative;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 25vw;
+            font-weight: 700;
+            padding: 0 20px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            line-height: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        /* Fullscreen button styling */
-        #fs-btn {
+        /* The horizontal split line */
+        .flip-card::after {
+            content: '';
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: color 0.2s;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--line-color);
+            z-index: 2;
         }
 
-        #fs-btn:hover {
-            color: white;
+        .separator {
+            font-size: 15vw;
+            color: var(--text-color);
+            font-weight: 700;
+            padding-bottom: 20px;
         }
 
-        /* Hide cursor when mouse is idle */
-        .idle {
-            cursor: none;
-        }
+        /* Hide cursor when idle */
+        .idle { cursor: none; }
     </style>
 </head>
 <body>
 
-    <div id="clock">00:00</div>
-    
-    <button id="fs-btn" title="Toggle Fullscreen">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
-    </button>
+    <div class="clock-container" id="clock-wrapper">
+        <div class="flip-card" id="hours">00</div>
+        <div class="separator">:</div>
+        <div class="flip-card" id="minutes">00</div>
+    </div>
 
     <script>
-        const clockElement = document.getElementById('clock');
-        const fsBtn = document.getElementById('fs-btn');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const wrapper = document.getElementById('clock-wrapper');
 
-        // Update the time
         function updateClock() {
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
             
-            // Optional: add seconds by uncommenting below
-            // const seconds = String(now.getSeconds()).padStart(2, '0');
-            
-            clockElement.textContent = `${hours}:${minutes}`;
+            if (hoursEl.textContent !== h) hoursEl.textContent = h;
+            if (minutesEl.textContent !== m) minutesEl.textContent = m;
         }
 
-        // Fullscreen Toggle
-        function toggleFullscreen() {
+        // Fullscreen on click anywhere
+        document.body.addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
             } else {
@@ -94,13 +103,9 @@
                     document.exitFullscreen();
                 }
             }
-        }
+        });
 
-        // Interaction listeners
-        fsBtn.addEventListener('click', toggleFullscreen);
-        clockElement.addEventListener('click', toggleFullscreen);
-
-        // Hide mouse after 3 seconds of inactivity
+        // Mouse idle logic
         let idleTimer;
         document.addEventListener('mousemove', () => {
             document.body.classList.remove('idle');
@@ -110,7 +115,6 @@
             }, 3000);
         });
 
-        // Initialize
         setInterval(updateClock, 1000);
         updateClock();
     </script>
