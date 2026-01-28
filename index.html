@@ -6,11 +6,13 @@
     <title>Ultrawide Flip Clock</title>
     <style>
         :root {
-            --bg-color: #050505;
-            --card-bg: #161616;
-            --text-color: #f0f0f0;
-            --line-color: rgba(0, 0, 0, 0.6);
-            --border-color: #2a2a2a;
+            /* Softened background - deep charcoal instead of pure black */
+            --bg-color: #121212; 
+            --card-bg: #1c1c1c;
+            --text-color: #f5f5f5;
+            --line-color: rgba(0, 0, 0, 0.7);
+            --border-color: #2d2d2d;
+            --shadow-color: rgba(0, 0, 0, 0.4);
         }
 
         body, html {
@@ -22,7 +24,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden;
             cursor: pointer;
         }
@@ -31,25 +33,26 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 2vh; /* Responsive gap */
-            width: 95%;
-            max-width: 3200px;
+            gap: 4vh; /* Larger gap since colon is gone */
+            width: 100%;
         }
 
         .flip-card {
             position: relative;
             background-color: var(--card-bg);
             color: var(--text-color);
-            /* Height-based sizing to fit 1440p perfectly */
-            font-size: 55vh; 
+            /* Increased size for 1440p */
+            font-size: 65vh; 
             font-weight: 800;
-            padding: 0 4vh;
-            border-radius: 2vh;
-            border: 3px solid var(--border-color);
+            padding: 0 5vh;
+            /* Increased border radius */
+            border-radius: 5vh; 
+            border: 2px solid var(--border-color);
             line-height: 1;
             display: flex;
             align-items: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 30px 60px var(--shadow-color);
+            transition: transform 0.2s ease;
         }
 
         /* The 3D Fold Shadow (Top half) */
@@ -60,8 +63,9 @@
             left: 0;
             width: 100%;
             height: 50%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.15) 100%);
-            border-radius: 1.5vh 1.5vh 0 0;
+            /* Subtle depth gradient */
+            background: linear-gradient(to bottom, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.2) 100%);
+            border-radius: 4.8vh 4.8vh 0 0;
             pointer-events: none;
         }
 
@@ -72,20 +76,13 @@
             top: 50%;
             left: 0;
             width: 100%;
-            height: 4px;
+            height: 6px; /* Slightly thicker line for the bigger cards */
             background-color: var(--line-color);
             z-index: 2;
             transform: translateY(-50%);
         }
 
-        .separator {
-            font-size: 40vh;
-            color: var(--text-color);
-            font-weight: 300;
-            opacity: 0.5;
-            margin-top: -5vh; /* Visual alignment */
-        }
-
+        /* Hide cursor when idle */
         .idle { cursor: none; }
     </style>
 </head>
@@ -93,7 +90,6 @@
 
     <div class="clock-container">
         <div class="flip-card" id="hours">00</div>
-        <div class="separator">:</div>
         <div class="flip-card" id="minutes">00</div>
     </div>
 
@@ -110,18 +106,18 @@
             if (minutesEl.textContent !== m) minutesEl.textContent = m;
         }
 
-        // Fullscreen Toggle
+        // Click anywhere to toggle Fullscreen
         document.body.addEventListener('click', () => {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Error attempting to enable full-screen mode: ${err.message}`);
+                    console.error(`Fullscreen failed: ${err.message}`);
                 });
             } else {
                 document.exitFullscreen();
             }
         });
 
-        // Mouse idle hide
+        // Hide mouse cursor after 2.5s of no movement
         let idleTimer;
         const hideMouse = () => {
             document.body.classList.remove('idle');
@@ -132,7 +128,6 @@
         };
 
         document.addEventListener('mousemove', hideMouse);
-        document.addEventListener('mousedown', hideMouse);
 
         setInterval(updateClock, 1000);
         updateClock();
