@@ -3,80 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultrawide Minimal Clock</title>
+    <title>Minimal Flat Clock</title>
     <style>
         :root {
-            /* Deep Charcoal background */
             --bg-color: #121212; 
             --card-bg: #1c1c1c;
             --text-color: #f5f5f5;
-            --border-color: #2d2d2d;
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: var(--bg-color);
             display: flex; justify-content: center; align-items: center;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden; cursor: pointer;
         }
 
         .clock-container {
             display: flex;
-            gap: 4vh;
-            perspective: 1000px;
+            gap: 3vh; /* Tight gap between hours and minutes */
         }
 
         .flip-card {
             position: relative;
             background-color: var(--card-bg);
             color: var(--text-color);
-            /* Sizing optimized for Ultrawide 1440p */
-            width: 42vh;
-            height: 72vh;
-            border-radius: 5vh;
-            border: 2px solid var(--border-color);
+            /* Adjusted for Ultrawide fit */
+            width: 44vh;
+            height: 70vh;
+            border-radius: 4vh;
+            /* Removed border outline for the "Flat" look */
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
             overflow: hidden;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.3s ease;
         }
 
-        /* The Elongated Numbers */
         .number {
-            font-size: 65vh;
+            font-size: 60vh;
             font-weight: 800;
-            /* This makes the numbers tall/long like your image */
-            transform: scaleY(1.3); 
+            /* Vertical stretch to match reference image */
+            transform: scaleY(1.25); 
             display: inline-block;
             letter-spacing: -2vh;
+            line-height: 1;
         }
 
-        /* The Fold Lighting (Top Half) */
+        /* 3D Fold Shadow (Top Half) */
         .flip-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.15) 100%);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.18) 100%);
             z-index: 2;
             pointer-events: none;
         }
 
-        /* The Center Gap - Matches Background Color */
+        /* Seamless Midline Gap */
         .flip-card::after {
             content: '';
             position: absolute;
-            top: 50%; left: 0; width: 100%; height: 8px;
-            background-color: var(--bg-color);
+            top: 50%; left: 0; width: 100%; height: 0.8vh; /* Proportionate height */
+            background-color: var(--bg-color); /* Blends into background */
             z-index: 3;
             transform: translateY(-50%);
         }
 
-        /* Subtle "Pop" animation when number changes */
-        .bump {
-            transform: scale(1.02);
+        /* Subtle "Flip" feel animation */
+        .pop {
+            transform: scale(1.03);
         }
 
         .idle { cursor: none; }
@@ -85,10 +81,10 @@
 <body>
 
     <div class="clock-container">
-        <div class="flip-card" id="hours-card">
+        <div class="flip-card" id="h-card">
             <span class="number" id="hours">00</span>
         </div>
-        <div class="flip-card" id="minutes-card">
+        <div class="flip-card" id="m-card">
             <span class="number" id="minutes">00</span>
         </div>
     </div>
@@ -96,8 +92,8 @@
     <script>
         const hEl = document.getElementById('hours');
         const mEl = document.getElementById('minutes');
-        const hCard = document.getElementById('hours-card');
-        const mCard = document.getElementById('minutes-card');
+        const hCard = document.getElementById('h-card');
+        const mCard = document.getElementById('m-card');
 
         function updateClock() {
             const now = new Date();
@@ -106,36 +102,29 @@
             
             if (hEl.textContent !== h) {
                 hEl.textContent = h;
-                triggerAnimation(hCard);
+                animate(hCard);
             }
             if (mEl.textContent !== m) {
                 mEl.textContent = m;
-                triggerAnimation(mCard);
+                animate(mCard);
             }
         }
 
-        function triggerAnimation(card) {
-            card.classList.add('bump');
-            setTimeout(() => card.classList.remove('bump'), 400);
+        function animate(card) {
+            card.classList.add('pop');
+            setTimeout(() => card.classList.remove('pop'), 300);
         }
 
-        // Fullscreen Logic
         document.body.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
         });
 
-        // Mouse Idle logic
         let idleTimer;
         document.addEventListener('mousemove', () => {
             document.body.classList.remove('idle');
             clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => {
-                document.body.classList.add('idle');
-            }, 2500);
+            idleTimer = setTimeout(() => document.body.classList.add('idle'), 2500);
         });
 
         setInterval(updateClock, 1000);
